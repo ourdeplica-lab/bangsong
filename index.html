@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F5F6F8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="휴게소 방송">
+<title>휴게소 방송</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#F5F6F8;--panel:#FFFFFF;--line:#E5E8EB;--ink:#191F28;--sub:#6B7684;
+--primary:#3182F6;--primary-bg:#E8EFFD;--ok:#15803D;--ok-bg:#E6F4EA;--danger:#DC2626;--danger-bg:#FDECEC;--on:#FFFFFF}
+@media (prefers-color-scheme:dark){:root{--bg:#111418;--panel:#1B1F25;--line:#2A3038;--ink:#E8EAED;--sub:#9AA3AD;
+--primary:#5B9CF8;--primary-bg:#1D2B44;--ok:#4ADE80;--ok-bg:#16301F;--danger:#F87171;--danger-bg:#3B1A1A;--on:#0B1220}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px/1.5 Pretendard,"Pretendard Variable",-apple-system,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px 24px;min-height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;height:56px;flex:none}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:-.01em}
+.conn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--sub)}
+.conn i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.conn.on{color:var(--ok)}.conn.off{color:var(--danger)}
+.editor{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.editor:focus-within{border-color:var(--primary)}
+textarea{display:block;width:100%;min-height:38vh;border:0;background:transparent;padding:16px;resize:none;line-height:1.65;outline:none}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 8px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
+.ghost{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;border:0;background:var(--primary-bg);color:var(--primary);font-size:14px;font-weight:700;flex:none}
+.ghost svg,.btn svg{width:18px;height:18px}
+.ghost.plain{background:transparent;color:var(--sub);font-weight:500}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:54px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-weight:700}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on);margin-top:12px}
+.btn:disabled{opacity:.4}
+.status{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--primary-bg);font-size:14px}
+.status.ok{background:var(--ok-bg)}.status.bad{background:var(--danger-bg)}
+.status b{flex:none;color:var(--primary)}.status.ok b{color:var(--ok)}.status.bad b{color:var(--danger)}
+.status span{flex:1}.status button{flex:none;border:0;background:none;color:var(--sub);text-decoration:underline;font-size:13px;padding:4px}
+.foot{margin-top:auto;padding-top:24px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.foot button{border:0;background:none;color:var(--sub);font-size:13px;padding:8px}
+.login{margin-top:12vh}
+.login p{color:var(--sub);font-size:14px;margin:4px 0 20px}
+.field{width:100%;height:52px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:0 16px;outline:none}
+.field:focus{border-color:var(--primary)}
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet{background:var(--panel);width:100%;max-width:520px;max-height:86vh;overflow-y:auto;display:flex;flex-direction:column;border-radius:18px 18px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px;flex:none}
+.sheet h2{font-size:18px;margin:0 0 4px}.sheet p{margin:0 0 12px;font-size:14px;color:var(--sub)}
+.quote{background:var(--bg);border-radius:10px;padding:14px;overflow:auto;white-space:pre-wrap;font-size:15px;margin-bottom:16px}
+.two{display:flex;gap:8px;flex:none}.two .btn{flex:1;margin-top:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:12px 0;flex:none;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:14px;line-height:1;white-space:nowrap}
+.chip.sel{background:var(--ink);border-color:var(--ink);color:var(--panel);font-weight:700}
+.chip.addw{border-style:dashed;border-color:var(--primary);color:var(--primary)}
+.chip.rm{border-color:var(--danger);color:var(--danger)}
+.quick{padding:0 0 10px}
+.quick .chip{background:var(--primary-bg);border-color:transparent;color:var(--primary);font-weight:700;max-width:70vw;overflow:hidden;text-overflow:ellipsis}
+.list{overflow:auto;margin:0 -16px;padding:0 16px;flex:1;min-height:30vh}
+.row{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.item{flex:1;min-width:0;text-align:left;border:0;background:none;padding:14px 0}
+.star{flex:none;width:44px;height:44px;border:0;background:none;color:var(--line);display:flex;align-items:center;justify-content:center}
+.star svg{width:22px;height:22px}
+.star.on{color:#F59E0B}.star.on svg{fill:currentColor}
+.star.pen{color:var(--sub)}
+.star.arm{width:auto;padding:0 10px;color:var(--danger);font-size:13px;font-weight:700}
+.head{display:flex;align-items:center;justify-content:space-between;flex:none}
+.head h2{margin:0}
+.textlink{border:0;background:none;color:var(--primary);font-size:15px;font-weight:700;padding:8px 4px}
+.textlink.small{font-size:13px;font-weight:500;color:var(--sub);height:34px;flex:none}
+.area{display:block;height:auto;min-height:26vh;padding:12px 16px;line-height:1.6;resize:none}
+.btn.add{height:46px;margin:4px 0 8px;border-style:dashed;color:var(--primary)}
+.btn.del{color:var(--danger);margin-top:8px}
+.item b{display:block;font-size:15px}
+.item span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;color:var(--sub);margin-top:2px}
+.empty{padding:32px 0;text-align:center;color:var(--sub);font-size:14px}
+.gap{height:8px;flex:none}
+/* 빈칸 채우기 */
+#fillSheet .sheet{max-height:92vh;overflow:hidden}
+.scroll{overflow-y:auto;flex:1;min-height:0;margin:0 -16px;padding:0 16px 12px}
+.fld{margin-top:14px}
+.fld label,.lbl{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.fld label small{font-weight:500;color:var(--sub)}
+.words{flex-wrap:wrap;overflow:visible;padding:8px 0 0}
+.lbl{margin-top:18px}
+.prev{margin-bottom:0;font-size:15px;line-height:1.7}
+mark{border-radius:4px;padding:0 2px;color:inherit}
+mark.v{background:var(--primary-bg);font-weight:700}
+mark.m{background:var(--danger-bg);color:var(--danger);font-weight:700}
+.bottom{flex:none;padding-top:10px;border-top:1px solid var(--line);margin:0 -16px;padding-left:16px;padding-right:16px}
+.hintrow{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:13px;color:var(--sub)}
+.panel{margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.panel .chips{padding:8px 0}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:10px 0}
+.chk input{width:20px;height:20px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#191F28;color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:20;max-width:90vw;text-align:center}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>휴게소 방송</h1>
+    <span id="conn" class="conn" hidden><i></i><span id="connText"></span></span>
+  </header>
+
+  <section id="vSetup" class="login" hidden>
+    <h2 style="margin:0;font-size:22px">받은 링크로 열어 주세요</h2>
+    <p>이 화면은 링크 뒤에 붙은 열쇠가 있어야 방송 PC와 연결됩니다. 관리자에게 받은 링크를 그대로 누르거나, 아래에 붙여 넣어 주세요.</p>
+    <input id="setupUrl" class="field" type="url" autocomplete="off" placeholder="받은 링크 붙여넣기" aria-label="받은 링크">
+    <button id="btnSetup" class="btn primary">열기</button>
+  </section>
+
+  <section id="vErr" class="login" hidden>
+    <h2 style="margin:0;font-size:22px">연결하지 못했습니다</h2>
+    <p id="errMsg"></p>
+    <button id="btnRetry" class="btn primary">다시 시도</button>
+  </section>
+
+  <section id="vLogin" class="login" hidden>
+    <h2 style="margin:0;font-size:22px">비밀번호를 넣어 주세요</h2>
+    <p>한 번 들어가면 이 휴대폰에 기억됩니다.</p>
+    <input id="pin" class="field" type="password" inputmode="numeric" autocomplete="off" placeholder="숫자 비밀번호" aria-label="비밀번호">
+    <button id="btnLogin" class="btn primary">들어가기</button>
+  </section>
+
+  <section id="vMain" hidden>
+    <div id="quick" class="chips quick" hidden aria-label="즐겨찾기 멘트"></div>
+    <div class="editor">
+      <textarea id="text" placeholder="방송할 내용을 적거나, 아래 [멘트 고르기]에서 불러오세요." aria-label="방송할 내용"></textarea>
+      <div class="bar">
+        <button id="btnPick" class="ghost" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>멘트 고르기</button>
+        <span><button id="btnClear" class="ghost plain" type="button">지우기</button><b id="len">0</b>/<span id="max">1000</span></span>
+      </div>
+    </div>
+    <button id="btnSend" class="btn primary" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>방송 시작</button>
+    <div id="status" class="status" hidden><b id="stPill"></b><span id="stMsg"></span><button id="btnCancel" type="button" hidden>취소</button></div>
+  </section>
+
+  <div id="foot" class="foot" hidden>
+    <button id="btnShare" type="button">링크 공유</button>
+    <button id="btnPin" type="button">비밀번호 잠금</button>
+    <button id="btnLogout" type="button">나가기</button>
+  </div>
+</div>
+
+<div id="confirm" class="dim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>
+    <h2>지금 방송할까요?</h2>
+    <p>휴게소 전체 스피커로 바로 나갑니다.</p>
+    <div id="confirmText" class="quote"></div>
+    <div class="two"><button class="btn" data-close type="button">취소</button><button id="btnYes" class="btn primary" type="button">방송하기</button></div>
+  </div>
+</div>
+
+<div id="picker" class="dim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>
+    <div class="head"><h2 id="pickTitle">멘트 고르기</h2><button id="btnEdit" class="textlink" type="button">편집</button></div>
+    <div class="gap"></div>
+    <input id="q" class="field" type="search" placeholder="제목이나 내용으로 찾기" aria-label="멘트 찾기" style="height:44px;flex:none">
+    <div id="cats" class="chips"></div>
+    <div id="list" class="list"></div>
+  </div>
+</div>
+
+<div id="fillSheet" class="dim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>
+    <h2 id="fillTitle"></h2>
+    <div class="scroll">
+      <div id="fillFields"></div>
+      <div class="lbl">이렇게 방송됩니다</div>
+      <div id="fillPrev" class="quote prev"></div>
+    </div>
+    <div class="bottom"><div class="two"><button id="btnFillEdit" class="btn" type="button">글 더 고치기</button><button id="btnFillSend" class="btn primary" type="button">방송하기</button></div></div>
+  </div>
+</div>
+
+<div id="editSheet" class="dim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>
+    <h2 id="edTitle">멘트 고치기</h2>
+    <p>고치면 이 링크를 쓰는 모든 휴대폰에 똑같이 반영됩니다.</p>
+    <input id="edName" class="field" type="text" maxlength="40" placeholder="멘트 이름 (예: 미아방송)" aria-label="멘트 이름" style="flex:none">
+    <div class="gap"></div>
+    <textarea id="edText" class="field area" placeholder="방송할 내용" aria-label="멘트 내용"></textarea>
+    <div class="hintrow"><button id="btnSlot" class="ghost" type="button">빈칸 넣기</button><span>{장소}처럼 중괄호로 쓴 곳이 빈칸이 됩니다. 같은 이름은 한 번만 채우면 됩니다.</span></div>
+    <div id="slotPanel" class="panel" hidden>
+      <label class="lbl" for="slName" style="margin-top:0">칸 이름</label>
+      <input id="slName" class="field" type="text" maxlength="12" placeholder="예: 장소" style="height:46px">
+      <div id="slNames" class="chips words"></div>
+      <label class="lbl" for="slKind" style="margin-top:12px">읽는 방법</label>
+      <select id="slKind" class="field" style="height:46px">
+        <option value="">적은 그대로</option>
+        <option value="번호읽기">번호읽기 (209호6316 → 이,공,구, 호, 육,삼,일,육)</option>
+        <option value="또박또박">또박또박 (윤도연 → 윤, 도, 연)</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="slOpt"> 없어도 되는 칸 (비우면 그 자리를 지움)</label>
+      <button id="btnSlotAdd" class="btn" type="button" style="height:46px">글의 커서 자리에 넣기</button>
+    </div>
+    <div class="gap"></div><div class="gap"></div>
+    <div class="two"><button id="btnEdBack" class="btn" type="button">돌아가기</button><button id="btnEdSave" class="btn primary" type="button">저장</button></div>
+    <button id="btnEdDel" class="btn del" type="button" hidden>삭제</button>
+  </div>
+</div>
+
+<div id="pinSheet" class="dim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>
+    <h2>비밀번호 잠금</h2>
+    <p id="lockDesc"></p>
+    <input id="newPin" class="field" type="password" inputmode="numeric" autocomplete="off" placeholder="새 비밀번호" aria-label="새 비밀번호">
+    <div class="gap"></div>
+    <input id="newPin2" class="field" type="password" inputmode="numeric" autocomplete="off" placeholder="새 비밀번호 한 번 더" aria-label="새 비밀번호 확인">
+    <div class="gap"></div><div class="gap"></div>
+    <div class="two"><button class="btn" data-close type="button">닫기</button><button id="btnPinSave" class="btn primary" type="button">잠금 켜기</button></div>
+    <button id="btnLockOff" class="btn" type="button" style="margin-top:8px" hidden>잠금 끄기 (비밀번호 없이 쓰기)</button>
+  </div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+// ENGINE-BEGIN
+// 빈칸 엔진: 화면과 상관없는 순수 함수. tests/slots_test.js 가 이 구간만 떼어 시험한다.
+// 표식: {이름} · {이름?}(없어도 됨) · {이름=기본값} · {이름:번호읽기} · {이름:또박또박}
+//       칸 바로 뒤의 을(를)·이(가)·은(는)·과(와)·(으)로 는 넣은 말의 받침에 맞게 고른다.
+var SLOT_SRC='\\{([^{}:=?]+)(?::([^{}=?]+))?(?:=([^{}?]*))?(\\?)?\\}';
+var PARTICLES={'을(를)':['을','를'],'를(을)':['을','를'],'이(가)':['이','가'],'가(이)':['이','가'],'은(는)':['은','는'],'는(은)':['은','는'],'과(와)':['과','와'],'와(과)':['과','와']};
+function parseSlots(text){
+  var out=[],by={},m,re=new RegExp(SLOT_SRC,'g');
+  while((m=re.exec(String(text||'')))){
+    var n=m[1].trim(),s=by[n];
+    if(!s){s=by[n]={name:n,kind:'',def:'',opt:false};out.push(s)}
+    if(m[2]&&!s.kind)s.kind=m[2].trim();
+    if(m[3]!=null&&!s.def)s.def=m[3].trim();
+    if(m[4])s.opt=true;
+  }
+  return out;
+}
+function readNumber(v){
+  var D='공일이삼사오육칠팔구',parts=[],m,re=/(\d+)|([^\d\s]+)/g;
+  while((m=re.exec(v)))parts.push(m[1]?m[1].split('').map(function(c){return D.charAt(+c)}).join(','):m[2]);
+  return parts.join(', ');
+}
+function spell(v){return v.replace(/\s+/g,'').split('').join(', ')}
+function convertSlot(kind,v){
+  v=String(v==null?'':v).trim();if(!v)return '';
+  return kind==='번호읽기'?readNumber(v):kind==='또박또박'?spell(v):v;
+}
+/* 마지막 글자의 받침 번호(0=없음, 8=ㄹ). 숫자는 읽는 소리로, 그 밖의 글자는 받침 없음으로 본다. */
+function batchim(word){
+  var w=String(word).replace(/[^0-9A-Za-z가-힣]+$/,''),c=w.charAt(w.length-1),code=c.charCodeAt(0);
+  if(code>=0xAC00&&code<=0xD7A3)return (code-0xAC00)%28;
+  if(c>='0'&&c<='9')return [21,8,0,16,0,0,1,8,8,0][+c];
+  return 0;
+}
+/* 글을 조각으로: {t:'text'|'val'|'miss', s}. val=채운 말, miss=아직 안 채운 필수 칸(s=칸 이름) */
+function fillParts(text,vals){
+  text=String(text||'');vals=vals||{};
+  var slots={},out=[],pos=0,m,re=new RegExp(SLOT_SRC,'g');
+  parseSlots(text).forEach(function(s){slots[s.name]=s});
+  function lit(s){if(!s)return;var l=out[out.length-1];if(l&&l.t==='text')l.s+=s;else out.push({t:'text',s:s})}
+  while((m=re.exec(text))){
+    lit(text.slice(pos,m.index));pos=re.lastIndex;
+    var s=slots[m[1].trim()],raw=vals[s.name]!=null?vals[s.name]:s.def,val=convertSlot(s.kind,raw);
+    var rest=text.slice(pos,pos+5),pk=null,k;
+    for(k in PARTICLES)if(rest.indexOf(k)===0){pk=k;break}
+    var ro=!pk&&rest.indexOf('(으)로')===0;
+    if(val){
+      out.push({t:'val',s:val});var b=batchim(val);
+      if(pk){lit(PARTICLES[pk][b?0:1]);pos+=pk.length}
+      else if(ro){lit(b&&b!==8?'으로':'로');pos+=4}
+    }else if(s.opt){
+      if(pk)pos+=pk.length;else if(ro)pos+=4;
+      var l=out[out.length-1],before=l&&l.t==='text'?l.s:(l?'x':'');
+      if(/(^|[ \n])$/.test(before)&&text.charAt(pos)===' ')pos++;
+    }else out.push({t:'miss',s:s.name});
+    re.lastIndex=pos;
+  }
+  lit(text.slice(pos));
+  return out;
+}
+function fillTemplate(text,vals){return fillParts(text,vals).map(function(p){return p.t==='miss'?'':p.s}).join('')}
+function missingSlots(text,vals){
+  var seen={},out=[];
+  fillParts(text,vals).forEach(function(p){if(p.t==='miss'&&!seen[p.s]){seen[p.s]=1;out.push(p.s)}});
+  return out;
+}
+// ENGINE-END
+
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+  function lsJson(k){try{return JSON.parse(lsGet(k)||'[]')}catch(e){return []}}
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;if(tag==='button')e.type='button';return e}
+  /* 한글 입력 중의 Enter(글자 확정)는 무시한다 */
+  function isEnter(e){return e.key==='Enter'&&!e.isComposing&&e.keyCode!==229}
+
+  /* ---- 서버 연결 ----
+     열쇠(구글 배포 ID)는 링크 뒤 #AKfycb… 로 받아 이 휴대폰에 기억한다. 화면 파일에는 넣지 않는다.
+     구글 주소를 직접 열지 않고 fetch 로만 부르기 때문에(쿠키가 안 붙음) 계정이 여러 개 로그인돼 있어도 된다. */
+  var hm=(location.hash||'').match(/AKfycb[\w-]{20,}/), apiId=hm?hm[0]:(lsGet('bc_api')||'');
+  if(hm)lsSet('bc_api',apiId);
+  if(/[?&]demo\b/.test(location.search))apiId='';
+  var demo=!apiId&&(/[?&]demo\b/.test(location.search)||location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));
+
+  /* 데모: 열쇠 없이 파일을 바로 열면 가짜 방송 PC로 동작한다 */
+  var Local=(function(){
+    var cmd=null,p='1234',lock=false;
+    function st(){return {ok:true,ver:'demo',maxLen:1000,online:true,lock:lock,cmd:cmd}}
+    function chk(pin){if(lock&&String(pin)!==p)throw new Error('비밀번호가 맞지 않습니다.')}
+    var tpl=[
+      {id:'t00',n:'분실물 주인찾기 안내',x:'잠시 안내말씀 드립니다.\n{장소}에서 {물품}을(를) 두고가신 {이름?} 고객님, {장소}에서 {물품}을(를) 두고가신 {이름?} 고객님,\n{보관장소}에서 보관 중이오니, 방문하여 주시길 바랍니다.\n{장소}에서 {물품}을(를) 두고가신 {이름?} 고객님, {장소}에서 {물품}을(를) 두고가신 {이름?} 고객님,\n{보관장소}에서 보관 중이오니, 방문하여 주시길 바랍니다.\n감사합니다.'},
+      {id:'t01',n:'주차이동 안내방송',x:'잠시 안내말씀 드립니다.\n차량번호 {차량번호:번호읽기}, 차량 차주님 께서는 이동주차 해주시길 바랍니다. 차량번호 {차량번호}, 차량 차주님 께서는 이동주차 해주시길 바랍니다.\n\n감사합니다.'},
+      {id:'t02',n:'미아방송',x:'잠시 안내 방송 드리겠습니다.\n{어린이 이름:또박또박}, 어린이를 찾고 있습니다.\n{어린이 이름}, 어린이는 방송을 듣는 즉시 , {만날곳=안내소}(으)로 오시기 바랍니다.'},
+      {id:'t03',n:'연막소독 안내방송',x:'잠시 안내 말씀 드리겠습니다.\n현재, 휴게소내에서 연막소독을 진행하고 있습니다.\n화재에 의한 연기가 아니오니 안심하시고 편안한 휴식 되시길 바랍니다.\n\n감사합니다.'}];
+    var fav=['t00'],words={'장소':['남자화장실','여자화장실','식당가','편의점','주차장'],'물품':['스마트폰','지갑','카드'],'보관장소':['식당가 카운터','편의점'],'만날곳':['안내소','편의점']};
+    return {
+      apiBoot:function(pin){chk(pin);return {state:st(),tpl:tpl,fav:fav,words:words}},
+      apiState:function(pin){chk(pin);return st()},
+      apiSend:function(pin,text){chk(pin);cmd={id:String(Date.now()),status:'wait',msg:'',text:text,ts:Date.now()};var c=cmd;
+        setTimeout(function(){if(c.status==='wait')c.status='sent'},3000);setTimeout(function(){if(c.status==='sent')c.status='air'},5000);setTimeout(function(){if(c.status==='air'){c.status='done';c.msg='방송 완료 (5초)'}},10000);return st()},
+      apiCancel:function(pin){chk(pin);if(cmd&&cmd.status==='wait')cmd.status='cancel';return st()},
+      apiSaveTemplate:function(pin,id,n,x){chk(pin);if(id)tpl=tpl.map(function(t){return t.id===id?{id:id,n:n,x:x}:t});else tpl=tpl.concat([{id:'t'+Date.now().toString(36),n:n,x:x}]);return tpl},
+      apiDeleteTemplate:function(pin,id){chk(pin);tpl=tpl.filter(function(t){return t.id!==id});fav=fav.filter(function(x){return x!==id});return tpl},
+      apiSetFav:function(pin,id,on){chk(pin);fav=fav.filter(function(x){return x!==id});if(on)fav.push(id);return fav},
+      apiSetWord:function(pin,slot,word,on){chk(pin);var m=JSON.parse(JSON.stringify(words)),a=(m[slot]||[]).filter(function(x){return x!==word});if(on)a.push(word);if(a.length)m[slot]=a;else delete m[slot];words=m;return m},
+      apiSetLock:function(pin,on,n){chk(pin);if(on){if(!/^[0-9]{4,8}$/.test(n))throw new Error('비밀번호는 숫자 4~8자리로 해 주세요.');p=n;lock=true}else lock=false;return st()}
+    };
+  })();
+  function call(fn){
+    var args=[].slice.call(arguments,1);
+    if(!apiId)return new Promise(function(res,rej){try{res(JSON.parse(JSON.stringify(Local[fn].apply(null,args))))}catch(e){rej(e)}});
+    var base='https://script.google.com/macros/s/'+apiId+'/exec', q='api='+fn+'&p='+encodeURIComponent(JSON.stringify(args))+'&_='+Date.now();
+    /* 긴 글은 주소에 다 못 싣는다(실측: 9,000자 OK·14,000자 실패) → POST. text/plain 이라 사전 확인 요청이 없다. */
+    var req=base.length+q.length<6000?fetch(base+'?'+q):fetch(base,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({api:fn,args:args})});
+    return req.then(function(r){
+      if(!r.ok)throw new Error('서버가 응답하지 않습니다('+r.status+'). 링크가 맞는지 확인해 주세요.');
+      return r.text();
+    },function(){
+      /* 인터넷이 끊겼을 때, 그리고 서버가 옛 버전이라 화면용 통로를 모를 때(브라우저가 응답을 막음)도 여기로 온다 */
+      throw new Error('서버에 연결하지 못했습니다. 인터넷을 확인해 주세요. (Code.gs 를 새 버전으로 배포하기 전에도 이렇게 나옵니다)');
+    }).then(function(t){
+      var j;try{j=JSON.parse(t)}catch(e){throw new Error('서버가 옛 버전입니다. Code.gs 를 새 버전으로 배포해 주세요.')}
+      if(!j||!j.ok)throw new Error((j&&j.error)||'서버 오류');
+      return j.data;
+    });
+  }
+
+  var pin=lsGet('bc_pin')||'', busy=false, lastTouch=Date.now(), timer=null, state=null, toastT=null;
+  var TPL=[], FAV=[], WORDS={};
+  var cat='멘트', editing=false, edId='', delArmed=false, armedId='', armT=null;
+  var TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+  var STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+  function toast(m){var t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},2800)}
+  function show(v){['Setup','Err','Login','Main'].forEach(function(n){$('v'+n).hidden=v!==n.toLowerCase()});$('foot').hidden=v!=='main';$('conn').hidden=v!=='main'}
+  function isActive(c){return !!c&&(c.status==='wait'||c.status==='sent'||c.status==='air')}
+  function saveCache(){lsSet('bc_boot',JSON.stringify({tpl:TPL,fav:FAV,words:WORDS,lock:!!(state&&state.lock)}))}
+  function slotText(x){return x.replace(new RegExp(SLOT_SRC,'g'),function(m,n){return '〔'+n.trim()+'〕'})}
+
+  /* 시트(아래에서 올라오는 창): 뒤로가기·바깥 누르기·Esc 로 닫힌다 */
+  var openId=null;
+  function openSheet(id){if(openId){switchSheet(id);return}openId=id;$(id).hidden=false;try{history.pushState({s:id},'')}catch(e){}}
+  function switchSheet(id){if(openId)$(openId).hidden=true;openId=id;$(id).hidden=false}
+  function closeSheet(fromPop){if(!openId)return;$(openId).hidden=true;openId=null;if(!fromPop){try{history.back()}catch(e){}}}
+  window.addEventListener('popstate',function(){closeSheet(true)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
+  [].forEach.call(document.querySelectorAll('.dim'),function(d){d.addEventListener('click',function(e){if(e.target===d||e.target.hasAttribute('data-close'))closeSheet()})});
+
+  var LABEL={wait:['보내는 중','','방송 PC로 보내고 있습니다. 길면 30초쯤 걸립니다.'],
+    sent:['준비 중','','방송 PC가 받았습니다. 곧 시작됩니다.'],
+    air:['방송 중','','지금 방송되고 있습니다.'],
+    done:['완료','ok','방송이 끝났습니다.'],
+    fail:['실패','bad','방송하지 못했습니다.'],
+    expired:['취소됨','bad','방송 PC가 제때 받지 못해 취소했습니다. 다시 눌러 주세요.'],
+    cancel:['취소됨','','보내기를 취소했습니다.']};
+
+  function render(s){
+    state=s;
+    $('conn').className='conn '+(s.online?'on':'off');
+    $('connText').textContent=s.online?'연결됨':'방송 PC 꺼짐';
+    $('btnLogout').hidden=!s.lock;
+    if(s.maxLen){$('max').textContent=s.maxLen;$('text').maxLength=s.maxLen}
+    var c=s.cmd, box=$('status');
+    if(c&&LABEL[c.status]&&(isActive(c)||Date.now()-c.ts<5*60000)){
+      var L=LABEL[c.status];box.hidden=false;box.className='status '+L[1];
+      $('stPill').textContent=L[0];$('stMsg').textContent=(c.status==='fail'&&c.msg)?c.msg:L[2];
+      $('btnCancel').hidden=c.status!=='wait';
+    }else box.hidden=true;
+    syncBtn();
+  }
+  function syncBtn(){
+    var t=$('text').value.trim();$('len').textContent=$('text').value.length;
+    $('btnSend').disabled=busy||!t||!state||!state.online||isActive(state.cmd);
+  }
+  /* 지금 방송을 보낼 수 없는 까닭(없으면 빈 글) */
+  function blockReason(){
+    if(!state)return '방송 PC 상태를 확인하는 중입니다. 잠시 뒤 다시 눌러 주세요.';
+    if(!state.online)return '방송 PC가 꺼져 있거나 인터넷이 끊겼습니다.';
+    if(busy||isActive(state.cmd))return '앞에 보낸 방송이 아직 끝나지 않았습니다.';
+    return '';
+  }
+  function fail(e){
+    var m=e&&e.message||String(e);
+    if(/비밀번호가 맞지|여러 번 틀렸/.test(m)){pin='';lsSet('bc_pin',null);if(openId)closeSheet();show('login')}
+    toast(m);
+  }
+  function refresh(){return call('apiState',pin).then(render)}
+  function loop(){
+    clearTimeout(timer);
+    var act=state&&isActive(state.cmd);
+    /* 손을 뗀 지 5분이 지나면 확인을 멈춘다(서버 사용량 절약). 화면을 다시 만지면 이어진다. */
+    var idle=Date.now()-lastTouch>5*60000;
+    timer=setTimeout(function(){
+      if($('vMain').hidden||document.hidden||(idle&&!act)){loop();return}
+      refresh().catch(function(){}).then(loop);
+    },act?2000:10000);
+  }
+  function remember(t){
+    var a=[t].concat(lsJson('bc_recent').filter(function(x){return x!==t})).slice(0,8);lsSet('bc_recent',JSON.stringify(a));
+  }
+
+  /* ---- 메인: 즐겨찾기 멘트 바로가기 ---- */
+  function renderQuick(){
+    var box=$('quick');box.textContent='';
+    var favs=FAV.map(function(id){return TPL.filter(function(t){return t.id===id})[0]}).filter(Boolean);
+    box.hidden=!favs.length;
+    favs.forEach(function(t){var b=el('button','chip',t.n);b.onclick=function(){pickTemplate(t)};box.appendChild(b)});
+  }
+  /* 멘트를 골랐을 때: 빈칸이 있으면 채우기 시트, 없으면 입력칸으로 */
+  function pickTemplate(t){
+    if(parseSlots(t.x).length){openFill(t);return}
+    $('text').value=t.x;syncBtn();if(openId)closeSheet();toast('불러왔습니다. 필요한 곳만 고쳐서 방송하세요.');
+  }
+
+  /* ---- 멘트 고르기·편집 ---- */
+  function renderPicker(){
+    $('pickTitle').textContent=editing?'멘트 편집':'멘트 고르기';$('btnEdit').textContent=editing?'완료':'편집';
+    if(editing)cat='멘트';
+    var cb=$('cats');cb.textContent='';cb.hidden=editing;
+    ['멘트','최근 보낸 것'].forEach(function(c){var b=el('button','chip'+(c===cat?' sel':''),c);b.onclick=function(){cat=c;renderPicker()};cb.appendChild(b)});
+    var q=$('q').value.trim().toLowerCase(), items, isTpl=cat==='멘트';
+    if(isTpl){
+      /* 즐겨찾기한 멘트가 위로, 그 안에서는 원래 순서. 편집 중에는 원래 순서 그대로 */
+      items=TPL.map(function(t,i){return {id:t.id,n:t.n,x:t.x,i:i,f:!editing&&FAV.indexOf(t.id)>=0}}).sort(function(a,b){return (b.f-a.f)||(a.i-b.i)});
+    }else items=lsJson('bc_recent').map(function(x){return {n:x.split('\n')[0].slice(0,30),x:x}});
+    if(q)items=items.filter(function(t){return (t.n+' '+t.x).toLowerCase().indexOf(q)>=0});
+    var box=$('list');box.textContent='';
+    if(editing){var add=el('button','btn add','새 멘트 추가');add.onclick=function(){openEditor(null)};box.appendChild(add)}
+    if(!items.length){box.appendChild(el('div','empty',q?'찾는 멘트가 없습니다.':(isTpl?'멘트가 없습니다.':'아직 보낸 방송이 없습니다.')));return}
+    items.forEach(function(t){
+      var row=el('div','row'), b=el('button','item');
+      b.appendChild(el('b','',t.n));b.appendChild(el('span','',slotText(t.x)));
+      b.onclick=editing?function(){openEditor(t)}:function(){pickTemplate(t)};row.appendChild(b);
+      if(isTpl){var st=el('button');
+        if(editing){
+          /* 휴지통: 한 번 누르면 빨갛게 "삭제?" 로 바뀌고, 한 번 더 누르면 지운다(실수 방지, 3초 뒤 원래대로) */
+          var armed=armedId===t.id;st.className='star pen'+(armed?' arm':'');
+          if(armed)st.textContent='삭제?';else st.innerHTML=TRASH;
+          st.title=st.ariaLabel=armed?'한 번 더 누르면 삭제':'삭제';
+          st.onclick=function(){
+            if(armedId!==t.id){armedId=t.id;renderPicker();clearTimeout(armT);armT=setTimeout(function(){armedId='';if(openId==='picker')renderPicker()},3000);return}
+            armedId='';clearTimeout(armT);st.disabled=true;
+            call('apiDeleteTemplate',pin,t.id).then(function(l){backToPicker(l,'삭제했습니다.')}).catch(function(e){renderPicker();fail(e)})}}
+        else{st.className='star'+(t.f?' on':'');st.innerHTML=STAR;st.title=st.ariaLabel=t.f?'즐겨찾기 해제':'즐겨찾기';
+          st.onclick=function(){var before=FAV,on=FAV.indexOf(t.id)<0;
+            /* 화면은 바로 바꾸고 서버에 저장한다. 저장이 실패하면 되돌린다. */
+            FAV=FAV.filter(function(x){return x!==t.id});if(on)FAV.push(t.id);renderPicker();renderQuick();
+            call('apiSetFav',pin,t.id,on).then(function(l){FAV=l;saveCache();renderPicker();renderQuick()}).catch(function(e){FAV=before;renderPicker();renderQuick();fail(e)})}}
+        row.appendChild(st)}
+      box.appendChild(row)});
+  }
+  function openEditor(t){
+    edId=t?t.id:'';delArmed=false;
+    $('edTitle').textContent=t?'멘트 고치기':'새 멘트';
+    $('edName').value=t?t.n:'';$('edText').value=t?t.x:$('text').value.trim();
+    $('btnEdDel').hidden=!t;$('btnEdDel').textContent='삭제';$('slotPanel').hidden=true;
+    switchSheet('editSheet');
+  }
+  function backToPicker(list,msg){
+    if(list){TPL=list;FAV=FAV.filter(function(x){return list.some(function(t){return t.id===x})});saveCache();renderQuick()}
+    editing=true;renderPicker();switchSheet('picker');if(msg)toast(msg);
+  }
+
+  /* ---- 빈칸 채우기 ---- */
+  var fillT=null, fillVals={}, fillSlots=[], tidy='';
+  function openFill(t){
+    fillT=t;fillVals={};tidy='';fillSlots=parseSlots(t.x);
+    $('fillTitle').textContent=t.n;
+    var box=$('fillFields');box.textContent='';
+    fillSlots.forEach(function(s,i){
+      fillVals[s.name]=s.def||'';
+      var f=el('div','fld'), lb=el('label','',s.name), inp=el('input','field');
+      lb.htmlFor='fi'+i;if(s.opt)lb.appendChild(el('small','',' (없으면 비워 두세요)'));
+      inp.id='fi'+i;inp.type='text';inp.autocomplete='off';inp.maxLength=40;inp.value=s.def||'';
+      inp.enterKeyHint=i<fillSlots.length-1?'next':'done';
+      inp.placeholder=s.kind==='번호읽기'?'예: 209호6316':s.kind==='또박또박'?'예: 윤도연':(WORDS[s.name]||[]).length?'직접 입력하거나 아래에서 고르세요':'직접 입력';
+      inp.oninput=function(){fillVals[s.name]=inp.value;renderWords(i);renderPrev()};
+      inp.onkeydown=function(e){if(!isEnter(e))return;e.preventDefault();var nx=$('fi'+(i+1));if(nx)nx.focus();else inp.blur()};
+      f.appendChild(lb);f.appendChild(inp);
+      var w=el('div','chips words');w.id='fw'+i;f.appendChild(w);
+      box.appendChild(f);
+    });
+    fillSlots.forEach(function(s,i){renderWords(i)});
+    renderPrev();
+    openSheet('fillSheet');
+    $('fillSheet').querySelector('.scroll').scrollTop=0;
+  }
+  /* 칸 아래 "자주 쓰는 말" 버튼 줄. 직접 입력이 기본이고, 버튼은 빠르게 고르는 용도 */
+  function renderWords(i){
+    var s=fillSlots[i], box=$('fw'+i), inp=$('fi'+i);if(!box)return;
+    box.textContent='';
+    if(s.kind){box.hidden=true;return}
+    var list=WORDS[s.name]||[], v=inp.value.trim(), isTidy=tidy===s.name;
+    function setWord(word,on){
+      var before=WORDS;WORDS=JSON.parse(JSON.stringify(WORDS));
+      var a=(WORDS[s.name]||[]).filter(function(x){return x!==word});if(on)a.push(word);
+      if(a.length)WORDS[s.name]=a;else{delete WORDS[s.name];tidy=''}
+      renderWords(i);
+      call('apiSetWord',pin,s.name,word,on).then(function(m){WORDS=m;saveCache();renderWords(i)}).catch(function(e){WORDS=before;renderWords(i);fail(e)});
+    }
+    list.forEach(function(wd){
+      var b=el('button','chip'+(isTidy?' rm':(wd===v?' sel':'')),isTidy?wd+' ×':wd);
+      if(isTidy){b.title=b.ariaLabel=wd+' 지우기';b.onclick=function(){setWord(wd,false)}}
+      else b.onclick=function(){inp.value=wd;fillVals[s.name]=wd;renderWords(i);renderPrev()};
+      box.appendChild(b);
+    });
+    if(!isTidy&&v&&v.length<=20&&list.indexOf(v)<0){
+      var ad=el('button','chip addw','＋ ‘'+v+'’ 추가');ad.title='자주 쓰는 말에 추가';ad.onclick=function(){setWord(v,true)};box.appendChild(ad);
+    }
+    if(list.length){var td=el('button','textlink small',isTidy?'완료':'정리');td.onclick=function(){tidy=isTidy?'':s.name;fillSlots.forEach(function(x,k){renderWords(k)})};box.appendChild(td)}
+    box.hidden=!box.childNodes.length;
+  }
+  function renderPrev(){
+    var box=$('fillPrev');box.textContent='';
+    fillParts(fillT.x,fillVals).forEach(function(p){
+      if(p.t==='text')box.appendChild(document.createTextNode(p.s));
+      else{var m=el('mark',p.t==='val'?'v':'m',p.t==='val'?p.s:'〔'+p.s+'〕');box.appendChild(m)}
+    });
+  }
+  $('btnFillEdit').onclick=function(){
+    var miss=missingSlots(fillT.x,fillVals);
+    $('text').value=fillTemplate(fillT.x,fillVals);syncBtn();closeSheet();
+    toast(miss.length?'안 채운 칸('+miss.join(', ')+')은 비어 있습니다. 입력칸에서 마저 적어 주세요.':'입력칸으로 옮겼습니다.');
+  };
+  $('btnFillSend').onclick=function(){
+    var miss=missingSlots(fillT.x,fillVals);
+    if(miss.length){
+      toast('빈칸을 채워 주세요: '+miss.join(', '));
+      for(var i=0;i<fillSlots.length;i++)if(fillSlots[i].name===miss[0]){$('fi'+i).focus();break}
+      return;
+    }
+    var text=fillTemplate(fillT.x,fillVals).trim(), max=(state&&state.maxLen)||1000;
+    if(text.length>max){toast('글이 너무 깁니다('+text.length+'자). '+max+'자까지 됩니다.');return}
+    var why=blockReason();if(why){toast(why);return}
+    $('text').value=text;syncBtn();
+    $('confirmText').textContent=text;switchSheet('confirm');
+  };
+
+  /* ---- 편집: 빈칸 넣기 ---- */
+  function renderSlotNames(){
+    var box=$('slNames'), seen={}, names=[];box.textContent='';
+    Object.keys(WORDS).forEach(function(n){if(!seen[n]){seen[n]=1;names.push(n)}});
+    TPL.forEach(function(t){parseSlots(t.x).forEach(function(s){if(!seen[s.name]){seen[s.name]=1;names.push(s.name)}})});
+    names.slice(0,16).forEach(function(n){var b=el('button','chip'+(n===$('slName').value.trim()?' sel':''),n);b.onclick=function(){$('slName').value=n;renderSlotNames()};box.appendChild(b)});
+  }
+  $('btnSlot').onclick=function(){var p=$('slotPanel');p.hidden=!p.hidden;if(!p.hidden){$('slName').value='';$('slKind').value='';$('slOpt').checked=false;renderSlotNames()}};
+  $('slName').oninput=renderSlotNames;
+  $('btnSlotAdd').onclick=function(){
+    var n=$('slName').value.trim();
+    if(!n){toast('칸 이름을 적어 주세요. 예: 장소');return}
+    if(/[{}:=?]/.test(n)){toast('칸 이름에는 { } : = ? 를 쓸 수 없습니다.');return}
+    var tok='{'+n+($('slKind').value?':'+$('slKind').value:'')+($('slOpt').checked?'?':'')+'}';
+    var ta=$('edText'), a=ta.selectionStart==null?ta.value.length:ta.selectionStart, b=ta.selectionEnd==null?a:ta.selectionEnd;
+    ta.value=ta.value.slice(0,a)+tok+ta.value.slice(b);
+    $('slotPanel').hidden=true;
+    try{ta.focus();ta.setSelectionRange(a+tok.length,a+tok.length)}catch(e){}
+    toast(tok+' 을 넣었습니다.');
+  };
+
+  /* ---- 시작 ---- */
+  function applyBoot(b){state=b.state;TPL=b.tpl||[];FAV=b.fav||[];WORDS=b.words||{};saveCache();show('main');render(b.state);renderQuick()}
+  function enter(){
+    /* 지난번에 받은 멘트를 먼저 보여 주고(기다림 없음) 뒤에서 새로 받는다 */
+    var c=null;try{c=JSON.parse(lsGet('bc_boot')||'null')}catch(e){}
+    if(c&&!c.lock&&apiId){TPL=c.tpl||[];FAV=c.fav||[];WORDS=c.words||{};show('main');$('conn').className='conn';$('connText').textContent='확인 중';renderQuick();syncBtn()}
+    return call('apiBoot',pin).then(function(b){lsSet('bc_pin',pin);applyBoot(b);loop()});
+  }
+  function start(){
+    if(!apiId&&!demo){show('setup');return}
+    enter().catch(function(e){
+      var m=e&&e.message||String(e);
+      if(/비밀번호가 맞지|여러 번 틀렸|설정 전/.test(m)){show('login');if(pin)toast(m);return}
+      if(!$('vMain').hidden){toast(m);loop();return}   /* 지난번 멘트로 이미 화면이 떠 있으면 그대로 둔다 */
+      $('errMsg').textContent=m;show('err');
+    });
+  }
+
+  $('btnSetup').onclick=function(){
+    var m=$('setupUrl').value.match(/AKfycb[\w-]{20,}/);
+    if(!m){toast('링크에서 열쇠를 찾지 못했습니다. 받은 링크를 통째로 붙여 넣어 주세요.');return}
+    apiId=m[0];lsSet('bc_api',apiId);try{history.replaceState(null,'','#'+apiId)}catch(e){}
+    start();
+  };
+  $('btnRetry').onclick=start;
+  $('btnLogin').onclick=function(){pin=$('pin').value.trim();if(!pin){toast('비밀번호를 적어 주세요.');return}
+    $('btnLogin').disabled=true;enter().catch(fail).then(function(){$('btnLogin').disabled=false})};
+  $('pin').onkeydown=function(e){if(isEnter(e)){e.preventDefault();$('btnLogin').click()}};
+  $('text').oninput=syncBtn;
+  $('btnClear').onclick=function(){$('text').value='';syncBtn();$('text').focus()};
+  $('btnPick').onclick=function(){$('q').value='';cat='멘트';editing=false;renderPicker();openSheet('picker')};
+  $('q').oninput=renderPicker;
+  $('btnEdit').onclick=function(){editing=!editing;armedId='';$('q').value='';renderPicker()};
+  $('btnEdBack').onclick=function(){backToPicker(null)};
+  $('btnEdSave').onclick=function(){
+    var n=$('edName').value.trim(),x=$('edText').value.trim();
+    if(!n){toast('멘트 이름을 적어 주세요.');return}
+    if(!x){toast('멘트 내용을 적어 주세요.');return}
+    $('btnEdSave').disabled=true;
+    call('apiSaveTemplate',pin,edId,n,x).then(function(l){backToPicker(l,'저장했습니다.')}).catch(fail).then(function(){$('btnEdSave').disabled=false});
+  };
+  $('btnEdDel').onclick=function(){
+    if(!delArmed){delArmed=true;$('btnEdDel').textContent='한 번 더 누르면 삭제됩니다';return}
+    $('btnEdDel').disabled=true;
+    call('apiDeleteTemplate',pin,edId).then(function(l){backToPicker(l,'삭제했습니다.')}).catch(fail).then(function(){$('btnEdDel').disabled=false});
+  };
+  $('btnSend').onclick=function(){
+    var t=$('text').value.trim();
+    if(/\{[^{}]*\}/.test(t)){toast('채우지 않은 빈칸 { } 이 남아 있습니다.');return}
+    $('confirmText').textContent=t;openSheet('confirm');
+  };
+  $('btnYes').onclick=function(){
+    var t=$('text').value.trim();closeSheet();busy=true;syncBtn();
+    call('apiSend',pin,t).then(function(s){remember(t);render(s)}).catch(fail).then(function(){busy=false;syncBtn();loop()});
+  };
+  $('btnCancel').onclick=function(){call('apiCancel',pin).then(render).catch(fail)};
+  $('btnShare').onclick=function(){
+    var url=location.origin+location.pathname+(apiId?'#'+apiId:'');
+    function copied(){toast('링크를 복사했습니다. 카톡 등에 붙여 넣어 보내세요.')}
+    function manual(){toast('주소창의 주소를 길게 눌러 복사해 주세요.')}
+    if(navigator.share){navigator.share({title:'휴게소 방송',url:url}).catch(function(){});return}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(copied,manual);else manual();
+  };
+  $('btnPin').onclick=function(){$('newPin').value='';$('newPin2').value='';var on=!!(state&&state.lock);
+    $('lockDesc').textContent=on?'지금 잠금이 켜져 있습니다. 새 비밀번호를 적으면 바뀌고, 아래 버튼으로 끌 수 있습니다.':'지금은 비밀번호 없이 열립니다. 숫자 4~8자리를 정하면 그때부터 비밀번호를 물어봅니다.';
+    $('btnPinSave').textContent=on?'비밀번호 바꾸기':'잠금 켜기';$('btnLockOff').hidden=!on;openSheet('pinSheet')};
+  $('btnLockOff').onclick=function(){call('apiSetLock',pin,false,'').then(function(s){render(s);saveCache();closeSheet();toast('잠금을 껐습니다.')}).catch(fail)};
+  $('btnPinSave').onclick=function(){
+    var a=$('newPin').value.trim(),b=$('newPin2').value.trim();
+    if(!/^[0-9]{4,8}$/.test(a)){toast('숫자 4~8자리로 적어 주세요.');return}
+    if(a!==b){toast('두 칸이 서로 다릅니다.');return}
+    call('apiSetLock',pin,true,a).then(function(s){pin=a;lsSet('bc_pin',a);render(s);saveCache();closeSheet();toast('잠금을 켰습니다. 이제 비밀번호를 물어봅니다.')}).catch(fail);
+  };
+  $('btnLogout').onclick=function(){pin='';lsSet('bc_pin',null);$('pin').value='';show('login')};
+  ['touchstart','keydown','click'].forEach(function(ev){document.addEventListener(ev,function(){lastTouch=Date.now()},{passive:true})});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&!$('vMain').hidden){lastTouch=Date.now();refresh().catch(function(){})}});
+
+  start();
+})();
+</script>
+</body>
+</html>
